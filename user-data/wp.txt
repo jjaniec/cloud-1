@@ -1,1 +1,16 @@
-sudo yum update -y
+#!/bin/bash -xe
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+  curl https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
+  chmod +x ./awslogs-agent-setup.py
+  sudo yum update -y
+  sudo amazon-linux-extras install -y docker
+  sudo service docker start
+  sudo usermod -a -G docker ec2-user
+  sudo docker run \
+   -i \
+   -p 80:80 \
+   -e WORDPRESS_DB_HOST="${ db_host }" \
+   -e WORDPRESS_DB_USER="${ db_user }" \
+   -e WORDPRESS_DB_PASSWORD="${ db_password }" \
+   -e WORDPRESS_DB_NAME="${ db_name }" \
+   wordpress

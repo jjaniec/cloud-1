@@ -12,16 +12,9 @@ resource "aws_lb" "front" {
 
 resource "aws_lb_listener" "front" {
   load_balancer_arn = aws_lb.front.arn
-  port = 80
+  port              = 80
   default_action {
     target_group_arn = aws_lb_target_group.front.arn
-    type = "forward"
+    type             = "forward"
   }
 }
-
-# resource "aws_lb_cookie_stickiness_policy" "front" {
-#   name                     = "stickiness-policy"
-#   load_balancer            = aws_lb.main.id
-#   lb_port                  = 80
-#   cookie_expiration_period = 600
-# }

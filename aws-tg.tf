@@ -5,7 +5,8 @@ resource "aws_lb_target_group" "front" {
   vpc_id   = aws_vpc.main.id
 
   health_check {
-    port = "traffic-port"
+    port    = "traffic-port"
+    matcher = "200,302"
   }
 
   stickiness {
