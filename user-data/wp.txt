@@ -2,15 +2,19 @@
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
   curl https://s3.amazonaws.com//aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
   chmod +x ./awslogs-agent-setup.py
+  sed -i  's/\\S/Amazon Linux AMI\\S/g' /etc/issue
+  sudo ./awslogs-agent-setup.py -n -r '${ current_region }' -c 's3://${ awslogs_conf_bucket }/${ awslogs_conf_key }'
   sudo yum update -y
   sudo amazon-linux-extras install -y docker
   sudo service docker start
   sudo usermod -a -G docker ec2-user
   sudo docker run \
-   -i \
+   -d \
    -p 80:80 \
    -e WORDPRESS_DB_HOST="${ db_host }" \
    -e WORDPRESS_DB_USER="${ db_user }" \
    -e WORDPRESS_DB_PASSWORD="${ db_password }" \
    -e WORDPRESS_DB_NAME="${ db_name }" \
+   --name wordpress \
    wordpress
+  sudo docker logs -f wordpress | tee /var/log/wordpress.log

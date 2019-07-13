@@ -4,6 +4,43 @@ resource "aws_iam_instance_profile" "front" {
   role = aws_iam_role.front.name
 }
 
+resource "aws_iam_role_policy" "cw-logs-publish" {
+  # description = "Allow fetching cw logs config file & pushing to cw logs"
+  name = "${var.naming.name}-cwlogs-access"
+  role = aws_iam_role.front.name
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+      ],
+      "Resource": [
+          "arn:aws:logs:*:*:*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+          "s3:GetObject"
+      ],
+      "Resource": [
+          "${aws_s3_bucket.logs.arn}",
+          "${aws_s3_bucket.logs.arn}/*"
+      ]
+    }
+  ]
+}
+EOF
+}
+
+
 resource "aws_iam_role" "front" {
   name = "${var.naming.name}-front"
 
