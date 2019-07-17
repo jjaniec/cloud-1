@@ -28,11 +28,11 @@ resource "aws_iam_role_policy" "cw-logs-publish" {
     {
       "Effect": "Allow",
       "Action": [
-          "s3:GetObject"
+          "s3:*"
       ],
       "Resource": [
-          "${aws_s3_bucket.logs.arn}",
-          "${aws_s3_bucket.logs.arn}/*"
+          "${aws_s3_bucket.static.arn}",
+          "${aws_s3_bucket.static.arn}/*"
       ]
     }
   ]
