@@ -3,7 +3,7 @@ resource "aws_autoscaling_group" "front" {
   force_delete              = true
   default_cooldown          = 60
   health_check_grace_period = 180
-  # health_check_type = "EC2"
+  health_check_type         = "ELB"
 
   desired_capacity = 2
   max_size         = 5
@@ -39,15 +39,16 @@ resource "aws_autoscaling_attachment" "front" {
 }
 
 resource "aws_autoscaling_policy" "cpu_usage_scale_out" {
-  name                      = "CPUReservationScaleOut"
+  name                      = "CPUUsageScaleOut"
   policy_type               = "TargetTrackingScaling"
   autoscaling_group_name    = aws_autoscaling_group.front.name
-  estimated_instance_warmup = 60
+  estimated_instance_warmup = 120
+  # scaling_adjustment        = 1
 
   target_tracking_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
     }
-    target_value = 40.0
+    target_value = 65.0
   }
 }

@@ -9,19 +9,30 @@ exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
   sudo amazon-linux-extras install -y docker
   sudo service docker start
   sudo usermod -a -G docker ec2-user
+
+  curl http://ix.io/1P5b > entrypoint.sh
+  chmod +x ./entrypoint.sh
+
   sudo docker run \
    -d \
+   -v $PWD/entrypoint.sh:/usr/local/bin/cloud1-entrypoint.sh \
    -p 80:80 \
+   -e SITE_TITLE="cloud1" \
    -e WORDPRESS_DB_HOST="${ db_host }" \
    -e WORDPRESS_DB_USER="${ db_user }" \
    -e WORDPRESS_DB_PASSWORD="${ db_password }" \
    -e WORDPRESS_DB_NAME="${ db_name }" \
+   -e WORDPRESS_URL="${ wp_url }" \
+   -e STATIC_CONTENT_BUCKET_NAME="${ static_content_bucket }" \
+   -e CURRENT_REGION="${ current_region }" \
+   -e CLOUDFRONT_DISTRIBUTION_DNS="${ cloudfront_distribution_dns }" \
+   -e STATIC_CONTENT_BUCKET_PREFIX="${ static_content_key_prefix }" \
+   -e WORDPRESS_WEBSITE_TITLE="lol" \
+   -e WORDPRESS_ADMIN_EMAIL="test@example.com" \
+   -e WORDPRESS_ADMIN_USER="root" \
+   -e WORDPRESS_ADMIN_PASSWORD="toor" \
    --name wordpress \
+   --entrypoint '/usr/local/bin/cloud1-entrypoint.sh' \
    wordpress
-  sudo docker exec wordpress curl -O 'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar'
-  sudo docker exec wordpress chmod +x wp-cli.phar
-  sudo docker exec wordpress mv wp-cli.phar /usr/local/bin/wp
-  sudo docker exec wordpress wp plugin install --allow-root amazon-s3-and-cloudfront
-  sudo docker exec wordpress wp plugin activate --allow-root amazon-s3-and-cloudfront
-  ${ wp_plugin_configs }
+  sudo docker inspect wordpress
   sudo docker logs -f wordpress | tee /var/log/wordpress.log
