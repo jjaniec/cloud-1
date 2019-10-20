@@ -27,7 +27,7 @@ exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
    -e CURRENT_REGION="${ current_region }" \
    -e CLOUDFRONT_DISTRIBUTION_DNS="${ cloudfront_distribution_dns }" \
    -e STATIC_CONTENT_BUCKET_PREFIX="${ static_content_key_prefix }" \
-   -e WORDPRESS_WEBSITE_TITLE="lol" \
+   -e WORDPRESS_WEBSITE_TITLE="cloud-1" \
    -e WORDPRESS_ADMIN_EMAIL="test@example.com" \
    -e WORDPRESS_ADMIN_USER="root" \
    -e WORDPRESS_ADMIN_PASSWORD="toor" \
